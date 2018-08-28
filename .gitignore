@@ -102,3 +102,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+.idea/
+config.ini
+db/*.db
+logs/*log*
+pipeline_with_session.py
