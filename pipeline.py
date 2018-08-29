@@ -23,10 +23,10 @@ def main():
                 logging.debug(json.dumps(ewons, indent=4))
 
                 for ewon in ewons['ewons']:
-                    name = ewon['encodedName'] # it may be 'name' instead of 'name'
+                    name = ewon['name'] # it could be 'encodedName'
                     res_tag = utils.m2web_api.gettags(name)
                     if res_tag.status_code == 200:
-                        tags = res_tag.json()
+                        tags = res_tag.text
                         logging.debug(tags)
 
                     else:

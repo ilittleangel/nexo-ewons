@@ -1,5 +1,9 @@
-[CREDENTIALS]
+[ACC_CREDENTIALS]
 t2maccount = account
 t2musername = user
 t2mpassword = pass
 t2mdeveloperid = devid
+
+[INS_CREDENTIALS]
+t2mdeviceusername = user
+t2mdevicepassword = pass

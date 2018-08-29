@@ -1,5 +1,7 @@
 import requests
-from settings import EWON_ROOT, t2maccount, t2mdeveloperid, t2mpassword, t2musername
+from settings import EWON_ROOT
+from settings import t2maccount, t2mdeveloperid, t2mpassword, t2musername
+from settings import t2mdeviceusername, t2mdevicepassword
 
 
 def login():
@@ -42,9 +44,7 @@ def getewons(pool_id, session=""):
 
 
 def gettags(name, session=''):
-    # rcgi.bin/ParamForm
-    # url = f"{EWON_ROOT}/get/{name}/rcgi.bin/ParamForm"
-    url = f"{EWON_ROOT}/get/{name}"
+    url = f"{EWON_ROOT}/get/{name}/rcgi.bin/ParamForm"
     if session:
         data = {'t2mdeveloperid': t2mdeveloperid,
                 't2msession': session}
@@ -53,5 +53,8 @@ def gettags(name, session=''):
         data = {'t2maccount': t2maccount,
                 't2musername': t2musername,
                 't2mpassword': t2mpassword,
-                't2mdeveloperid': t2mdeveloperid}
+                't2mdeveloperid': t2mdeveloperid,
+                't2mdeviceusername': t2mdeviceusername,
+                't2mdevicepassword': t2mdevicepassword,
+                'AST_Param': '$dtIV$ftT'}
         return requests.post(url=url, data=data)
