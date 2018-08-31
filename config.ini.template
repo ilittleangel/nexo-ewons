@@ -7,3 +7,6 @@ t2mdeveloperid = devid
 [INS_CREDENTIALS]
 t2mdeviceusername = user
 t2mdevicepassword = pass
+
+[ELASTIC]
+esnodes = esnode1:port,esnode2:port

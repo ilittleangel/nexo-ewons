@@ -2,12 +2,14 @@ import configparser
 from os.path import dirname, abspath
 
 ROOT_DIR = dirname(abspath(__file__))
+NO_PROXY = {'http': None, 'https': None}
 
 # config.ini
 config = configparser.ConfigParser()
 config.read('config.ini')
 acc_credentials = config['ACC_CREDENTIALS']
 ins_credentials = config['INS_CREDENTIALS']
+elastic = config['ELASTIC']
 
 # db
 DB_LOCATION = "./db/ewons.db"
@@ -21,3 +23,7 @@ t2mpassword = acc_credentials['t2mpassword']
 t2mdeveloperid = acc_credentials['t2mdeveloperid']
 t2mdeviceusername = ins_credentials['t2mdeviceusername']
 t2mdevicepassword = ins_credentials['t2mdevicepassword']
+
+# elastic
+ESNODES = str(elastic['esnodes']).split(',')
+INDEX_NAME = "ewon-tags"
