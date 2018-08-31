@@ -1,41 +1,46 @@
-import logging
 import json
+import logging
 import utils.m2web_api
+
+from utils.logging import init_logging, close_logging
+from settings import ROOT_DIR
 
 
 def main():
-    logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', level=logging.DEBUG)
 
     res_info = utils.m2web_api.getaccountinfo()
     if res_info.status_code == 200:
 
-        logging.debug(f"res_info.status_code={res_info.status_code}")
+        logger.debug(f"res_info.status_code={res_info.status_code}")
         accountinfo = res_info.json()
-        logging.debug(json.dumps(accountinfo, indent=4))
+        logger.debug(json.dumps(accountinfo, indent=4))
 
         for pool in accountinfo['pools']:
             id_installation = pool['id']
             res_ewons = utils.m2web_api.getewons(id_installation)
             if res_ewons.status_code == 200:
 
-                logging.debug(f"res_ewons.status_code={res_ewons.status_code}")
+                logger.debug(f"res_ewons.status_code={res_ewons.status_code}")
                 ewons = res_ewons.json()
-                logging.debug(json.dumps(ewons, indent=4))
+                logger.debug(json.dumps(ewons, indent=4))
 
                 for ewon in ewons['ewons']:
-                    name = ewon['name'] # it could be 'encodedName'
+                    name = ewon['name']  # it could be 'encodedName'
                     res_tag = utils.m2web_api.gettags(name)
                     if res_tag.status_code == 200:
                         tags = res_tag.text
-                        logging.debug(tags)
+                        logger.debug(tags)
 
                     else:
-                        logging.error(f"Something wrong with `gettags()`: {res_tag}")
+                        logger.error(f"Something wrong with `gettags()`: {res_tag}")
             else:
-                logging.error(f"Something wrong with `getewons()`: {res_ewons}")
+                logger.error(f"Something wrong with `getewons()`: {res_ewons}")
     else:
-        logging.error(f"Something wrong with `getaccountinfo()`: {res_info}")
+        logger.error(f"Something wrong with `getaccountinfo()`: {res_info}")
 
 
 if __name__ == '__main__':
+    init_logging(f'{ROOT_DIR}/logs/ewons')
+    logger = logging.getLogger('pipeline')
     main()
+    close_logging()

@@ -46,5 +46,5 @@ fi
 - [ ] Use corrutines with asyncio
 - [ ] Index tags to elasticsearch
 - [ ] Include shell scripts for running
-- [ ] Logging with a timed rotating log file
+- [x] Logging with a timed rotating log file
 - [ ] Create a DockerFile
