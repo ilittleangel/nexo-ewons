@@ -27,3 +27,10 @@ t2mdevicepassword = ins_credentials['t2mdevicepassword']
 # elastic
 ESNODES = str(elastic['esnodes']).split(',')
 INDEX_NAME = "ewon-tags"
+USER = ""
+PASS = ""
+try:
+    USER = elastic['user']
+    PASS = elastic['pass']
+except KeyError:
+    pass

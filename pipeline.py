@@ -2,17 +2,13 @@ import json
 import logging
 import utils.m2web_api
 
-from utils.elastic import create_connection, index
+from utils.elastic import index
 from utils.logging import init_logging, close_logging
 from utils.helpers import csv_to_dict, prepare
 from settings import ROOT_DIR
 
 
 def main():
-
-    es, health = create_connection()
-    logger.debug(f"Connected to Elasticsearch")
-    logger.debug(f"Elasticsearch health: {health}")
 
     res_info = utils.m2web_api.getaccountinfo()
     if res_info.status_code == 200:
@@ -36,9 +32,11 @@ def main():
                     if res_tag.status_code == 200:
                         tags = res_tag.text
                         doc = prepare(csv_to_dict(tags))
-                        logger.debug(doc)
-                        index(es, doc=doc, doc_type_mode="tags")
-
+                        logger.debug(f"Indexing tags: {doc}")
+                        if index(doc=doc, doc_type_mode="tags"):
+                            logger.info("SUCCEDEDD indexing tags")
+                        else:
+                            logger.error("FAILED indexing tags")
                     else:
                         logger.error(f"Something wrong with `gettags()`: {res_tag}")
             else:

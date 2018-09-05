@@ -17,12 +17,22 @@ We must to rename the `config.ini.template` file to `config.ini`
 in the project's root directory, and fill it with the credentials
 
 ```ini
-[CREDENTIALS]
+[ACC_CREDENTIALS]
 t2maccount = account
 t2musername = user
 t2mpassword = pass
 t2mdeveloperid = devid
+
+[INS_CREDENTIALS]
+t2mdeviceusername = user
+t2mdevicepassword = pass
+
+[ELASTIC]
+esnodes = esnode1:port,esnode2:port
+user = user
+pass = pass
 ```
+> `user` and `pass` only if required for the connection to Elasticsearch
 
 ## Running the ingestion of ewons tags
 
@@ -44,7 +54,7 @@ fi
 ## What's next
 
 - [ ] Use corrutines with asyncio
-- [ ] Index tags to elasticsearch
+- [x] Index tags to elasticsearch
 - [ ] Include shell scripts for running
 - [x] Logging with a timed rotating log file
 - [ ] Create a DockerFile

@@ -4,9 +4,11 @@ from requests.exceptions import ConnectionError
 from elasticsearch import Elasticsearch, ElasticsearchException, TransportError
 import elasticsearch.exceptions
 import logging
+import requests
+from requests.auth import HTTPBasicAuth
 
 from utils.helpers import filter_bad_requests
-from settings import ESNODES, INDEX_NAME
+from settings import ESNODES, INDEX_NAME, USER, PASS
 
 
 logger = logging.getLogger(__name__)
@@ -34,16 +36,21 @@ def create_connection():
         sys.exit(1)
 
 
-def index(es, doc, doc_type_mode):
+def index(doc, doc_type_mode):
     index_name = f"{INDEX_NAME}-{datetime.today().strftime('%Y%m%d')}"
-    try:
-        res = es.index(index=index_name, doc_type=doc_type_mode, body=doc)
-    except TransportError as te:
-        logger.warning(f"Failure to index: {te}")
-        sys.exit(1)
-    except ElasticsearchException as ee:
-        logger.error(f"Unable to connect Elasticsearch: {ee}")
-        sys.exit(1)
+    if USER and PASS:
+        url = f"{ESNODES[0]}/{index_name}/{doc_type_mode}"
+        res = requests.post(url=url, auth=HTTPBasicAuth(USER, PASS), json=doc).json()
+    else:
+        es, _ = create_connection()
+        try:
+            res = es.index(index=index_name, doc_type=doc_type_mode, body=doc)
+        except TransportError as te:
+            logger.warning(f"Failure to index: {te}")
+            sys.exit(1)
+        except ElasticsearchException as ee:
+            logger.error(f"Unable to connect Elasticsearch: {ee}")
+            sys.exit(1)
 
     if not is_indexed(res):
         logger.error(f"Conflic response: {res}")
