@@ -38,23 +38,19 @@ pass = pass
 
 ```bash
 #!/usr/bin/env bash
-PIDFILE=/tmp/ewons_app.pid
-trap "{ rm -f $PIDFILE; }" EXIT
 
-if [[ -f $PIDFILE ]]; then
-  echo "Process is taking more than schedule interval..."
-  exit 0
-else
-  echo $$ > ${PIDFILE}
-  source ~/venvs/myenv/bin/activate
-  python ~/pipeline.py
-fi
+run() {
+    python3.6 ~/nexo-ewons/pipeline.py
+}
+
+source ~/software/venvs/venv/bin/activate
+while true; do run; done
 ```
 
 ## What's next
 
 - [ ] Use corrutines with asyncio
 - [x] Index tags to elasticsearch
-- [ ] Include shell scripts for running
+- [x] Include shell scripts for running
 - [x] Logging with a timed rotating log file
 - [ ] Create a DockerFile
