@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 
 run() {
-    python3.6 ~/nexo-ewons/pipeline.py
+    python3.6 pipeline.py
 }
 
-source ~/venv/bin/activate
-while true; do run; done
+echo "Activando virtual enviroment: source ~/enviroments/monitor/bin/activate"
+source ~/enviroments/monitor/bin/activate
+cd ~/nexo-ewons
+while true; do
+    echo "ARRANCANDO INGESTION";
+    run;
+    echo "DURMIENDO 30 SEGUNDOS";
+    sleep 30;
+done
+
