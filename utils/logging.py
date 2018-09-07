@@ -1,5 +1,6 @@
 import logging
 import logging.handlers
+import sys
 
 
 # noinspection PyShadowingNames
@@ -18,3 +19,9 @@ def init_logging(log_file):
 def close_logging():
     for handler in logging.getLogger('').handlers:
         handler.close()
+
+
+def error(message, logger=""):
+    logger = logging.getLogger(logger)
+    logger.error(message)
+    sys.exit(1)

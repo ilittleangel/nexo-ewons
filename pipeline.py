@@ -1,9 +1,9 @@
 import json
 import logging
-import utils.m2web_api
 
+import utils.m2web_api
 from utils.elastic import index
-from utils.logging import init_logging, close_logging
+from utils.logging import init_logging, close_logging, error
 from utils.helpers import csv_to_dict, prepare
 from settings import ROOT_DIR
 
@@ -34,15 +34,15 @@ def main():
                         doc = prepare(csv_to_dict(tags))
                         logger.debug(f"Indexing tags: {doc}")
                         if index(doc=doc, doc_type_mode="tags"):
-                            logger.info("SUCCEDEDD indexing tags")
+                            logger.info("Tags ingestion SUCCEDEDD")
                         else:
-                            logger.error("FAILED indexing tags")
+                            error("Tags ingestion FAILED", logger='pipeline')
                     else:
-                        logger.error(f"Something wrong with `gettags()`: {res_tag}")
+                        error(f"Something wrong with `gettags()`: {res_tag}", logger='pipeline')
             else:
-                logger.error(f"Something wrong with `getewons()`: {res_ewons}")
+                error(f"Something wrong with `getewons()`: {res_ewons}", logger='pipeline')
     else:
-        logger.error(f"Something wrong with `getaccountinfo()`: {res_info}")
+        error(f"Something wrong with `getaccountinfo()`: {res_info}", logger='pipeline')
 
 
 if __name__ == '__main__':

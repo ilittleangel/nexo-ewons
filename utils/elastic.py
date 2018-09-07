@@ -40,7 +40,13 @@ def index(doc, doc_type_mode):
     index_name = f"{INDEX_NAME}-{datetime.today().strftime('%Y%m%d')}"
     if USER and PASS:
         url = f"{ESNODES[0]}/{index_name}/{doc_type_mode}"
-        res = requests.post(url=url, auth=HTTPBasicAuth(USER, PASS), json=doc).json()
+        rq = requests.post(url=url, auth=HTTPBasicAuth(USER, PASS), json=doc)
+        if rq.status_code == 201:
+            res = rq.json()
+            logger.debug(f"Tags indexed successfully: {res}")
+        else:
+            logger.error(f"Failure to index: {te}")
+            sys.exit(1)
     else:
         es, _ = create_connection()
         try:
