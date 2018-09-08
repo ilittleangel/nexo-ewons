@@ -10,6 +10,7 @@ config.read('config.ini')
 acc_credentials = config['ACC_CREDENTIALS']
 ins_credentials = config['INS_CREDENTIALS']
 elastic = config['ELASTIC']
+logging = config['LOGGING']
 
 # db
 DB_LOCATION = "./db/ewons.db"
@@ -34,3 +35,6 @@ try:
     PASS = elastic['pass']
 except KeyError:
     pass
+
+# logging
+log_level = logging['level']

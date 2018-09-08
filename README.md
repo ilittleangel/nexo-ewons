@@ -31,21 +31,19 @@ t2mdevicepassword = pass
 esnodes = esnode1:port,esnode2:port
 user = user
 pass = pass
+
+[LOGGING]
+level = DEBUG
 ```
 > `user` and `pass` only if required for the connection to Elasticsearch
 
 ## Running the ingestion of ewons tags
 
 ```bash
-#!/usr/bin/env bash
-
-run() {
-    python3.6 ~/nexo-ewons/pipeline.py
-}
-
-source ~/software/venvs/venv/bin/activate
-while true; do run; done
+python3.6 pipeline.py
 ```
+> We must to install requirements.txt
+
 
 ## What's next
 

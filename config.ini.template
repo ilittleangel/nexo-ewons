@@ -10,3 +10,6 @@ t2mdevicepassword = pass
 
 [ELASTIC]
 esnodes = esnode1:port,esnode2:port
+
+[LOGGING]
+level = DEBUG

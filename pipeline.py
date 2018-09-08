@@ -10,6 +10,8 @@ from settings import ROOT_DIR
 
 def main():
 
+    logger.info("START tags ingestion")
+
     res_info = utils.m2web_api.getaccountinfo()
     if res_info.status_code == 200:
 
