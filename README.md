@@ -47,7 +47,7 @@ python3.6 pipeline.py
 
 ## What's next
 
-- [ ] Use corrutines with asyncio
+- [ ] Use corrutines with asyncio. A corrutine per api call (accountinfo and getewons just once)
 - [x] Index tags to elasticsearch
 - [x] Include shell scripts for running
 - [x] Logging with a timed rotating log file
