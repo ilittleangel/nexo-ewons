@@ -13,3 +13,6 @@ esnodes = esnode1:port,esnode2:port
 
 [LOGGING]
 level = DEBUG
+
+[PIPELINE]
+sleep_seconds = 2

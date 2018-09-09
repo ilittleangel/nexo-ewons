@@ -1,6 +1,8 @@
 import configparser
 from os.path import dirname, abspath
 
+from utils.helpers import is_int
+
 ROOT_DIR = dirname(abspath(__file__))
 NO_PROXY = {'http': None, 'https': None}
 
@@ -11,6 +13,7 @@ acc_credentials = config['ACC_CREDENTIALS']
 ins_credentials = config['INS_CREDENTIALS']
 elastic = config['ELASTIC']
 logging = config['LOGGING']
+pipeline = config['PIPELINE']
 
 # db
 DB_LOCATION = "./db/ewons.db"
@@ -27,7 +30,7 @@ t2mdevicepassword = ins_credentials['t2mdevicepassword']
 
 # elastic
 ESNODES = str(elastic['esnodes']).split(',')
-INDEX_NAME = "ewon-tags"
+INDEX_NAME = "ewon-tags".lower()
 USER = ""
 PASS = ""
 try:
@@ -38,3 +41,7 @@ except KeyError:
 
 # logging
 log_level = logging['level']
+
+# pipeline
+sleep_seconds = int(pipeline['sleep_seconds'])
+

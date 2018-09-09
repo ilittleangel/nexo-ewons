@@ -1,11 +1,12 @@
 import json
 import logging
+import time
 
 import utils.m2web_api
 from utils.elastic import index
 from utils.logging import init_logging, close_logging, error
 from utils.helpers import csv_to_dict, prepare
-from settings import ROOT_DIR
+from settings import ROOT_DIR, sleep_seconds
 
 
 def _accountinfo():
@@ -49,10 +50,13 @@ def _tags(ewons):
 
 
 def main():
+
     logger.info("START tags ingestion")
     accountinfo = _accountinfo()
     ewons = _ewons(accountinfo)
-    _tags(ewons)
+    while True:
+        _tags(ewons)
+        time.sleep(sleep_seconds)
 
 
 if __name__ == '__main__':
