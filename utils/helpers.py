@@ -25,7 +25,7 @@ def csv_to_dict(str_csv):
     d = {}
     lst = list(csv.DictReader(io.StringIO(str_csv), delimiter=';'))
     for elem in json.loads(json.dumps(lst)):
-        d[f"{elem['TagName']}"] = elem['Value']
+        d[f"{elem['TagName']}"] = to_number(elem['Value'])
     return d
 
 
@@ -36,3 +36,28 @@ def filter_keys_on_doc(doc: dict, fields: list):
 def prepare(doc):
     doc['@timestamp'] = datetime.now().isoformat()
     return doc
+
+
+def is_int(string):
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False
+
+
+def is_float(string):
+    try:
+        float(string)
+        return True
+    except ValueError:
+        return False
+
+
+def to_number(string):
+    if is_int(string):
+        return int(string)
+    elif is_float(string):
+        return float(string)
+    else:
+        return string
