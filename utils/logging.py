@@ -34,7 +34,9 @@ def close_logging():
         handler.close()
 
 
-def error(message, logger=""):
+# noinspection PyShadowingBuiltins
+def error(message, logger="", exit=True):
     logger = logging.getLogger(logger)
     logger.error(message)
-    sys.exit(1)
+    if exit:
+        sys.exit(1)

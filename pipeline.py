@@ -5,7 +5,7 @@ import time
 import utils.m2web_api
 from utils.elastic import index
 from utils.logging import init_logging, close_logging, error
-from utils.helpers import csv_to_dict, prepare
+from utils.helpers import csv_to_dict, prepare, counter
 from settings import ROOT_DIR, sleep_seconds
 
 
@@ -33,7 +33,7 @@ def _ewons(accountinfo):
             error(f"Something wrong with `getewons()`: {res_ewons}", logger='pipeline')
 
 
-def _tags(ewons):
+def _tags(ewons, count):
     for ewon in ewons['ewons']:
         name = ewon['name']  # it could be 'encodedName'
         res_tag = utils.m2web_api.gettags(name)
@@ -43,10 +43,12 @@ def _tags(ewons):
             logger.debug(f"Indexing tags: {doc}")
             if index(doc=doc, doc_type_mode="tags"):
                 logger.info("Tags ingestion SUCCEDEDD")
+                return 0
             else:
                 error("Tags ingestion FAILED", logger='pipeline')
         else:
-            error(f"Something wrong with `gettags()`: {res_tag}", logger='pipeline')
+            error(f"Something wrong with `gettags()`: {res_tag}", logger='pipeline', exit=False)
+            return next(count)
 
 
 def main():
@@ -54,8 +56,12 @@ def main():
     logger.info("START tags ingestion")
     accountinfo = _accountinfo()
     ewons = _ewons(accountinfo)
+    count = counter(init_val=0)
     while True:
-        _tags(ewons)
+        num_failures = _tags(ewons, count)
+        logger.debug(f"num failures=`{num_failures}`")
+        if num_failures > 5:
+            error(f"Tags ingestion FAILED because too many failures: failures=`{num_failures}`", logger='pipeline')
         time.sleep(sleep_seconds)
 
 
