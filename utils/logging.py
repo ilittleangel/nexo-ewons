@@ -35,8 +35,12 @@ def close_logging():
 
 
 # noinspection PyShadowingBuiltins
-def error(message, logger="", exit=True):
+def failure_logging(message, logger="", exit=True, level="ERROR"):
     logger = logging.getLogger(logger)
-    logger.error(message)
+    if level == "WARN":
+        logger.warning(message)
+    else:
+        logger.error(message)
     if exit:
+        logger.info("CALLING PROCESS EXIT")
         sys.exit(1)
