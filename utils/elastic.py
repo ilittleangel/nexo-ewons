@@ -45,7 +45,7 @@ def index(doc, doc_type_mode):
             res = rq.json()
             logger.debug(f"Tags indexed successfully: {res}")
         else:
-            logger.error(f"Failure to index: {te}")
+            logger.error(f"Failure to index: http_status={rq.status_code}")
             sys.exit(1)
     else:
         es, _ = create_connection()

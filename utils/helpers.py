@@ -1,5 +1,7 @@
+import csv
+import io
+import json
 import requests
-import csv, io, json
 from datetime import datetime
 
 
