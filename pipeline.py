@@ -63,12 +63,12 @@ def _actions_against_failure(failures, res):
     switcher = {
         1: {'sleep_time': 60,      'exit': False, 'msg': message_warn,  'level': "WARN"},
         2: {'sleep_time': 60,      'exit': False, 'msg': message_warn,  'level': "WARN"},
-        3: {'sleep_time': 60 * 15, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        4: {'sleep_time': 60 * 15, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        5: {'sleep_time': 60 * 15, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        6: {'sleep_time': 60 * 15, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        7: {'sleep_time': 60 * 15, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        8: {'sleep_time': 60 * 15, 'exit': False, 'msg': message_warn,  'level': "WARN"},
+        3: {'sleep_time': 60,      'exit': False, 'msg': message_warn,  'level': "WARN"},
+        4: {'sleep_time': 60,      'exit': False, 'msg': message_warn,  'level': "WARN"},
+        5: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
+        6: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
+        7: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
+        8: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
         9: {'sleep_time': 60 * 0,  'exit': True,  'msg': message_error, 'level': "ERROR"}
     }
     params = switcher.get(failures, lambda: "Invalid num of failures")
