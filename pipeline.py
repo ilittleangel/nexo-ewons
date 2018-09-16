@@ -43,11 +43,13 @@ def _tags(ewons, count):
             logger.debug(f"Indexing tags: {doc}")
             if index(doc=doc, doc_type_mode="tags"):
                 logger.info("Tags ingestion SUCCEDEDD")
-                return 0, res
+                failures = 0
+                return failures, counter(init_val=0), res
             else:
                 failure_logging("Tags ingestion FAILED because TAGs was not indexed", logger='pipeline')
         else:
-            return next(count), res
+            failures = next(count)
+            return failures, count, res
 
 
 # noinspection PyShadowingBuiltins
@@ -85,10 +87,10 @@ def main():
     ewons = _ewons(accountinfo)
     count = counter(init_val=0)
     while True:
-        num_failures, res = _tags(ewons, count)
-        logger.debug(f"num failures=`{num_failures}`")
-        if num_failures > 0:
-            _actions_against_failure(num_failures, res)
+        failures, count, res = _tags(ewons, count)
+        logger.debug(f"num failures=`{failures}`")
+        if failures > 0:
+            _actions_against_failure(failures, res)
         time.sleep(sleep_seconds)
 
 
