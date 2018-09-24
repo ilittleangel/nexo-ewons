@@ -53,10 +53,10 @@ def _tags(ewons, count):
 
 
 # noinspection PyShadowingBuiltins
-def _action_failure(sleep_time, exit, msg, level):
-    failure_logging(msg, logger='pipeline', exit=exit, level=level)
-    logger.info(f"sleeping {sleep_time} seconds")
-    time.sleep(sleep_time)
+def _action_failure(params):
+    failure_logging(message=params['msg'], logger='pipeline', exit=params['exit'], level=params['level'])
+    logger.info(f"sleeping {params['sleep_time']} seconds")
+    time.sleep(params['sleep_time'])
 
 
 def _actions_against_failure(failures, res):
@@ -74,10 +74,7 @@ def _actions_against_failure(failures, res):
         9: {'sleep_time': 60 * 0,  'exit': True,  'msg': message_error, 'level': "ERROR"}
     }
     params = switcher.get(failures, lambda: "Invalid num of failures")
-    _action_failure(sleep_time=params['sleep_time'],
-                    exit=params['exit'],
-                    msg=params['msg'],
-                    level=params['level'])
+    _action_failure(params)
 
 
 def main():

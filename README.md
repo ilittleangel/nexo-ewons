@@ -2,8 +2,9 @@
 
 1. [What's the point?](#whats-the-point)
 2. [Credentials](#credentials-configini)
-3. [Running the ingestion of ewons tags](#running-the-ingestion-of-ewons-tags)
-4. [What's next](#whats-next)
+3. [Install `requirements.txt`](#install-requirementstxt)
+4. [Running the ingestion of ewons tags](#running-the-ingestion-of-ewons-tags)
+5. [What's next](#whats-next)
 
 
 ## What's the point?
@@ -34,8 +35,19 @@ pass = pass
 
 [LOGGING]
 level = DEBUG
+
+[PIPELINE]
+sleep_seconds = 2
 ```
 > `user` and `pass` only if required for the connection to Elasticsearch
+
+
+## Install `requirements.txt`
+
+```bash
+pip install -r requirements.txt
+```
+
 
 ## Running the ingestion of ewons tags
 

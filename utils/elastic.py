@@ -1,14 +1,14 @@
-import sys
-from datetime import datetime
-from requests.exceptions import ConnectionError
-from elasticsearch import Elasticsearch, ElasticsearchException, TransportError
 import elasticsearch.exceptions
 import logging
 import requests
+import sys
+from datetime import datetime
+from elasticsearch import Elasticsearch, ElasticsearchException, TransportError
 from requests.auth import HTTPBasicAuth
+from requests.exceptions import ConnectionError
 
-from utils.helpers import filter_bad_requests
 from settings import ESNODES, INDEX_NAME, USER, PASS
+from utils.helpers import filter_bad_requests
 
 
 logger = logging.getLogger(__name__)

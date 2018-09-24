@@ -1,7 +1,6 @@
 import configparser
 from os.path import dirname, abspath
 
-from utils.helpers import is_int
 
 ROOT_DIR = dirname(abspath(__file__))
 NO_PROXY = {'http': None, 'https': None}
