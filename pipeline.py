@@ -1,6 +1,8 @@
 import json
 import logging
 import time
+import sys
+import requests.exceptions
 
 import utils.m2web_api
 from utils.elastic import index
@@ -65,13 +67,9 @@ def _actions_against_failure(failures, res):
     switcher = {
         1: {'sleep_time': 60,      'exit': False, 'msg': message_warn,  'level': "WARN"},
         2: {'sleep_time': 60,      'exit': False, 'msg': message_warn,  'level': "WARN"},
-        3: {'sleep_time': 60,      'exit': False, 'msg': message_warn,  'level': "WARN"},
-        4: {'sleep_time': 60,      'exit': False, 'msg': message_warn,  'level': "WARN"},
-        5: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
-        6: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
-        7: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
-        8: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
-        9: {'sleep_time': 60 * 0,  'exit': True,  'msg': message_error, 'level': "ERROR"}
+        3: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
+        4: {'sleep_time': 60 * 3,  'exit': False, 'msg': message_warn,  'level': "WARN"},
+        5: {'sleep_time': 0,       'exit': True,  'msg': message_error, 'level': "ERROR"}
     }
     params = switcher.get(failures, lambda: "Invalid num of failures")
     _action_failure(params)
@@ -80,15 +78,26 @@ def _actions_against_failure(failures, res):
 def main():
 
     logger.info("START tags ingestion")
-    accountinfo = _accountinfo()
-    ewons = _ewons(accountinfo)
-    count = counter(init_val=0)
-    while True:
-        failures, count, res = _tags(ewons, count)
-        logger.debug(f"num failures=`{failures}`")
-        if failures > 0:
-            _actions_against_failure(failures, res)
-        time.sleep(sleep_seconds)
+    # noinspection PyBroadException
+    try:
+
+        accountinfo = _accountinfo()
+        ewons = _ewons(accountinfo)
+        count = counter(init_val=0)
+        while True:
+            failures, count, res = _tags(ewons, count)
+            logger.debug(f"num failures=`{failures}`")
+            if failures > 0:
+                _actions_against_failure(failures, res)
+            time.sleep(sleep_seconds)
+
+    except requests.exceptions.ConnectionError as ce:
+        logger.error(f"Something wrong connecting to ewon cloud: {ce}")
+        time.sleep(60 * 5)
+        main()
+    except Exception as e:
+        logger.error(f"Something wrong happens but it is unknown: {e}")
+        sys.exit(1)
 
 
 if __name__ == '__main__':
