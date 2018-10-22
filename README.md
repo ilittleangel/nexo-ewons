@@ -48,14 +48,19 @@ sleep_seconds = 2
 pip install -r requirements.txt
 ```
 
-
-## Running the ingestion of ewons tags
+## Running the ingestion process
 
 ```bash
-python3.6 pipeline.py
+nohup nexo-ewons/bin/run.sh $
 ```
 > We must to install requirements.txt
 
+
+## Stop the ingestion proccess
+
+```bash
+kill $(ps aux | grep -v grep | grep nexo-ewons/bin/run.sh | awk '{print $2}')
+```
 
 ## What's next
 
