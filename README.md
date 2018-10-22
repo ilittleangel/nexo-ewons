@@ -51,7 +51,7 @@ pip install -r requirements.txt
 ## Running the ingestion process
 
 ```bash
-nohup nexo-ewons/bin/run.sh $
+nohup nexo-ewons/bin/run.sh &
 ```
 > We must to install requirements.txt
 
