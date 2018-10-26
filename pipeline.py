@@ -81,10 +81,13 @@ def main():
     # noinspection PyBroadException
     try:
 
+        logger.info(f"Requesting for Account Info ...")
         accountinfo = _accountinfo()
+        logger.info(f"Requesting for Ewons Intallations ...")
         ewons = _ewons(accountinfo)
         count = counter(init_val=0)
         while True:
+            logger.info(f"Requesting for Tags ...")
             failures, count, res = _tags(ewons, count)
             logger.debug(f"num failures=`{failures}`")
             if failures > 0:
