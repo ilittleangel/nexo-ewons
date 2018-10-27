@@ -7,22 +7,27 @@ from elasticsearch import Elasticsearch, ElasticsearchException, TransportError
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import ConnectionError
 
-from settings import ESNODES, INDEX_NAME, USER, PASS
+from settings import INDEX_NAME
 from utils.helpers import filter_bad_requests
 
 
 logger = logging.getLogger(__name__)
 
 
-def is_indexed(status):
-    return status['_shards']['failed'] == 0
+def is_indexed(res):
+    status = res['_shards']['failed']
+    if status == 0:
+        return True
+    else:
+        logger.error(f"Conflic response: {res}")
+        return False
 
 
-def create_connection():
+def create_connection(esnodes):
     try:
-        nodes = filter_bad_requests(ESNODES)
+        nodes = filter_bad_requests(esnodes)
         if nodes:
-            es = Elasticsearch(ESNODES)
+            es = Elasticsearch(esnodes)
             health = es.cluster.health()
             return es, health['status']
         else:
@@ -36,33 +41,30 @@ def create_connection():
         sys.exit(1)
 
 
-def index(doc, doc_type_mode):
+def index(doc, doc_type_mode, user, password, esnodes):
     index_name = f"{INDEX_NAME}-{datetime.today().strftime('%Y%m%d')}"
-    if USER and PASS:
-        url = f"{ESNODES[0]}/{index_name}/{doc_type_mode}"
-        rq = requests.post(url=url, auth=HTTPBasicAuth(USER, PASS), json=doc)
-        if rq.status_code == 201:
+    if user and password:
+        url = f"{esnodes[0]}/{index_name}/{doc_type_mode}"
+        rq = requests.post(url=url, auth=HTTPBasicAuth(user, password), json=doc)
+        rq.raise_for_status()
+        try:
             res = rq.json()
             logger.debug(f"Tags indexed successfully: {res}")
-        else:
-            logger.error(f"Failure to index: http_status={rq.status_code}")
-            sys.exit(1)
+            return is_indexed(res)
+        except ElasticsearchException as ee:
+            logger.error(f"Failure to index: http_status={rq.status_code}: {ee}")
+
     else:
-        es, _ = create_connection()
+        es, _ = create_connection(esnodes)
         try:
             res = es.index(index=index_name, doc_type=doc_type_mode, body=doc)
+            return is_indexed(res)
         except TransportError as te:
             logger.warning(f"Failure to index: {te}")
             sys.exit(1)
         except ElasticsearchException as ee:
             logger.error(f"Unable to connect Elasticsearch: {ee}")
             sys.exit(1)
-
-    if not is_indexed(res):
-        logger.error(f"Conflic response: {res}")
-        return False
-    else:
-        return True
 
 
 def get_newest_index(es):

@@ -9,6 +9,8 @@ from utils.elastic import index
 from utils.logging import init_logging, close_logging, failure_logging
 from utils.helpers import csv_to_dict, prepare, counter
 from settings import ROOT_DIR, sleep_seconds
+from settings import ESNODES, USER, PASS
+from settings import ESNODES_cloud, USER_cloud, PASS_cloud
 
 
 def _accountinfo():
@@ -43,12 +45,18 @@ def _tags(ewons, count):
             tags = res.text
             doc = prepare(csv_to_dict(tags))
             logger.debug(f"Indexing tags: {doc}")
-            if index(doc=doc, doc_type_mode="tags"):
+            res = index(doc, "tags", USER, PASS, ESNODES)
+            logger.info(f"Indexing on {ESNODES}: {res}")
+            res_cloud = index(doc, "tags", USER_cloud, PASS_cloud, ESNODES_cloud)
+            logger.info(f"Indexing on {ESNODES_cloud}: {res_cloud}")
+            if res and res_cloud:
                 logger.info("Tags ingestion SUCCEDEDD")
                 failures = 0
                 return failures, counter(init_val=0), res
             else:
-                failure_logging("Tags ingestion FAILED because TAGs was not indexed", logger='pipeline')
+                failure_logging("Tags ingestion FAILED because TAGs was not indexed:"
+                                f"(on-premise,{res}), (cloud,{res_cloud})",
+                                logger='pipeline')
         else:
             failures = next(count)
             return failures, count, res

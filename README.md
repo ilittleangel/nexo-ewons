@@ -59,7 +59,7 @@ nohup nexo-ewons/bin/run.sh &
 ## Stop the ingestion proccess
 
 ```bash
-kill $(ps aux | grep -v grep | grep nexo-ewons/bin/run.sh | awk '{print $2}')
+kill $(ps aux | grep -v grep | grep "python3.6 pipeline.py" | awk '{print $2}')
 ```
 
 ## What's next

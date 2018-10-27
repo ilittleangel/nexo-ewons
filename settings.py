@@ -8,17 +8,14 @@ NO_PROXY = {'http': None, 'https': None}
 # config.ini
 config = configparser.ConfigParser()
 config.read('config.ini')
-acc_credentials = config['ACC_CREDENTIALS']
-ins_credentials = config['INS_CREDENTIALS']
-elastic = config['ELASTIC']
-logging = config['LOGGING']
-pipeline = config['PIPELINE']
 
 # db
 DB_LOCATION = "./db/ewons.db"
 APPID = "app-nexo-1"
 
 # ewon
+acc_credentials = config['ACC_CREDENTIALS']
+ins_credentials = config['INS_CREDENTIALS']
 EWON_ROOT = "https://m2web.talk2m.com/t2mapi"
 t2maccount = acc_credentials['t2maccount']
 t2musername = acc_credentials['t2musername']
@@ -28,6 +25,7 @@ t2mdeviceusername = ins_credentials['t2mdeviceusername']
 t2mdevicepassword = ins_credentials['t2mdevicepassword']
 
 # elastic
+elastic = config['ELASTIC']
 ESNODES = str(elastic['esnodes']).split(',')
 INDEX_NAME = "ewon-tags".lower()
 USER = ""
@@ -38,9 +36,17 @@ try:
 except KeyError:
     pass
 
+# elastic cloud
+elastic_cloud = config['ELASTIC_CLOUD']
+ESNODES_cloud = str(elastic_cloud['esnodes']).split(',')
+USER_cloud = elastic_cloud['user']
+PASS_cloud = elastic_cloud['pass']
+
 # logging
+logging = config['LOGGING']
 log_level = logging['level']
 
 # pipeline
+pipeline = config['PIPELINE']
 sleep_seconds = int(pipeline['sleep_seconds'])
 
