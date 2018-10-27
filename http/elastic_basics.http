@@ -1,0 +1,42 @@
+### listar indices
+GET http://elasticsearch:9200/_cat/indices?pretty&s=index
+Authorization: Basic user pass
+
+### buscar en un indice
+GET http://elasticsearch:9200/ewon-tags-20181027/_search?q=*&pretty
+Authorization: Basic user pass
+
+### buscar en todos
+GET http://elasticsearch:9200/_all/_search?q=Estado_B1:1
+Authorization: Basic user pass
+
+### buscar usando el DSL
+POST http://elasticsearch:9200/ewon-tags-20181027/_search
+Authorization: Basic user pass
+Content-Type: application/json
+
+{
+  "query": {
+    "match": {
+      "Estado_B1": 1
+    }
+  }
+}
+
+### borrar indices
+DELETE http://elasticsearch:9200/indice?pretty
+Authorization: Basic user pass
+
+### borrar con query
+POST http://elasticsearch:9200/indice/_delete_by_query
+Authorization: Basic user pass
+Content-Type: application/json
+
+{
+  "query": {
+
+    "match": {
+      "message": "some message"
+    }
+  }
+}
