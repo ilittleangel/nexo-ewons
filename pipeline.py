@@ -102,13 +102,10 @@ def main():
                 _actions_against_failure(failures, res)
             time.sleep(sleep_seconds)
 
-    except requests.exceptions.ConnectionError as ce:
-        logger.error(f"Something wrong connecting to ewon cloud: {ce}")
+    except requests.exceptions.RequestException as re:
+        logger.error(f"Something wrong connecting to ewon cloud: {re}")
         time.sleep(30)
         main()
-    except Exception as e:
-        logger.error(f"Something wrong happens but it is unknown: {e}")
-        sys.exit(1)
 
 
 if __name__ == '__main__':

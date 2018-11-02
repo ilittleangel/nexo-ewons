@@ -51,8 +51,8 @@ def index(doc, doc_type_mode, user, password, esnodes):
             res = rq.json()
             logger.debug(f"Tags indexed successfully: {res}")
             return is_indexed(res)
-        except ElasticsearchException as ee:
-            logger.error(f"Failure to index: http_status={rq.status_code}: {ee}")
+        except requests.exceptions.RequestException as re:
+            logger.error(f"Failure to index: http_status={rq.status_code}: {re}")
 
     else:
         es, _ = create_connection(esnodes)
@@ -80,5 +80,4 @@ def get_newest_index(es):
         return indices[0]
 
     except elasticsearch.exceptions.NotFoundError as nfe:
-        logger.error(f"Index Not found motherfucker: {nfe}")
-        sys.exit(1)
+        logger.error(f"Index Not: {nfe}")
