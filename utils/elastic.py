@@ -11,7 +11,7 @@ from settings import INDEX_NAME
 from utils.helpers import filter_bad_requests
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('pipeline')
 
 
 def is_indexed(res):

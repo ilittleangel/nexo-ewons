@@ -25,17 +25,17 @@ def init_logging(log_file):
     fh = logging.handlers.TimedRotatingFileHandler(filename=f"{log_file}.log", when='MIDNIGHT', backupCount=7, utc=True)
     fh.setLevel(logging.DEBUG)
     fh.setFormatter(formatter)
-    logging.getLogger('').addHandler(fh)
+    logging.getLogger('pipeline').addHandler(fh)
 
 
 # noinspection PyShadowingNames
 def close_logging():
-    for handler in logging.getLogger('').handlers:
+    for handler in logging.getLogger('pipeline').handlers:
         handler.close()
 
 
 # noinspection PyShadowingBuiltins
-def failure_logging(message, logger="", exit=True, level="ERROR"):
+def failure_logging(message, logger='pipeline', exit=True, level="ERROR"):
     logger = logging.getLogger(logger)
     if level == "WARN":
         logger.warning(message)
