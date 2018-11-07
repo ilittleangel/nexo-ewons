@@ -1,11 +1,9 @@
 import elasticsearch.exceptions
 import logging
 import requests
-import sys
 from datetime import datetime
 from elasticsearch import Elasticsearch, ElasticsearchException, TransportError
 from requests.auth import HTTPBasicAuth
-from requests.exceptions import ConnectionError
 
 from settings import INDEX_NAME
 from utils.helpers import filter_bad_requests
@@ -24,30 +22,25 @@ def is_indexed(res):
 
 
 def create_connection(esnodes):
-    try:
-        nodes = filter_bad_requests(esnodes)
-        if nodes:
-            es = Elasticsearch(esnodes)
-            health = es.cluster.health()
-            return es, health['status']
-        else:
-            logger.error(f"Unable to connect Elasticsearch")
-            sys.exit(1)
-    except elasticsearch.exceptions.TransportError as te:
-        logger.error(f"Unable to connect Elasticsearch: {te}")
-        sys.exit(1)
-    except ConnectionError as ce:
-        logger.error(f"Unable to connect Elasticsearch: {ce}")
-        sys.exit(1)
+    nodes = filter_bad_requests(esnodes)
+    if nodes:
+        es = Elasticsearch(esnodes)
+        health = es.cluster.health()
+        return es, health['status']
+    else:
+        logger.error(f"Unable to connect Elasticsearch")
 
 
 def index(doc, doc_type_mode, user, password, esnodes):
     index_name = f"{INDEX_NAME}-{datetime.today().strftime('%Y%m%d')}"
     if user and password:
-        url = f"{esnodes[0]}/{index_name}/{doc_type_mode}"
-        rq = requests.post(url=url, auth=HTTPBasicAuth(user, password), json=doc)
-        rq.raise_for_status()
         try:
+            url = f"{esnodes[0]}/_cluster/health"
+            health = requests.get(url=url, auth=HTTPBasicAuth(user, password)).json()['status']
+            logger.info(f"Status Health of [{esnodes[0]}]: {health}")
+
+            url = f"{esnodes[0]}/{index_name}/{doc_type_mode}"
+            rq = requests.post(url=url, auth=HTTPBasicAuth(user, password), json=doc)
             res = rq.json()
             logger.debug(f"Tags indexed successfully: {res}")
             return is_indexed(res)
@@ -55,16 +48,16 @@ def index(doc, doc_type_mode, user, password, esnodes):
             logger.error(f"Failure to index: http_status={rq.status_code}: {re}")
 
     else:
-        es, _ = create_connection(esnodes)
         try:
+            es, health = create_connection(esnodes)
+            logger.info(f"Status Health of [{esnodes}]: {health}")
             res = es.index(index=index_name, doc_type=doc_type_mode, body=doc)
+            logger.debug(f"Tags indexed successfully: {res}")
             return is_indexed(res)
         except TransportError as te:
-            logger.warning(f"Failure to index: {te}")
-            sys.exit(1)
+            logger.error(f"Failure to index: {te}")
         except ElasticsearchException as ee:
-            logger.error(f"Unable to connect Elasticsearch: {ee}")
-            sys.exit(1)
+            logger.error(f"Something wrong with Elasticsearch: {ee}")
 
 
 def get_newest_index(es):
