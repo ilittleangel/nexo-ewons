@@ -42,6 +42,7 @@ def _tags(ewons, count):
         name = ewon['name']  # it could be 'encodedName'
         res = utils.m2web_api.gettags(name)
         if res.status_code == 200:
+            ewon_failures = 0
             tags = res.text
             doc = prepare(csv_to_dict(tags))
             logger.debug(f"Indexing tags: {doc}")
@@ -49,17 +50,11 @@ def _tags(ewons, count):
             logger.info(f"Indexing on {ESNODES}: {res}")
             res_cloud = index(doc, "tags", USER_cloud, PASS_cloud, ESNODES_cloud)
             logger.info(f"Indexing on {ESNODES_cloud}: {res_cloud}")
-            if res and res_cloud:
-                logger.info("Tags ingestion SUCCEDEDD")
-                failures = 0
-                return failures, counter(init_val=0), res
-            else:
-                failure_logging("Tags ingestion FAILED because TAGs was not indexed:"
-                                f"(on-premise,{res}), (cloud,{res_cloud})",
-                                logger='pipeline')
+            results = [("on-premise", res), ("cloud", res_cloud)]
+            return ewon_failures, counter(init_val=0), results
         else:
-            failures = next(count)
-            return failures, count, res
+            ewon_failures = next(count)
+            return ewon_failures, count, res
 
 
 # noinspection PyShadowingBuiltins

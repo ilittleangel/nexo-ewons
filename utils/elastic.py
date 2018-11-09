@@ -34,18 +34,27 @@ def create_connection(esnodes):
 def index(doc, doc_type_mode, user, password, esnodes):
     index_name = f"{INDEX_NAME}-{datetime.today().strftime('%Y%m%d')}"
     if user and password:
+        # health
         try:
             url = f"{esnodes[0]}/_cluster/health"
-            health = requests.get(url=url, auth=HTTPBasicAuth(user, password)).json()['status']
+            rq = requests.get(url=url, auth=HTTPBasicAuth(user, password))
+            rq.raise_for_status()
+            health = rq.json()['status']
             logger.info(f"Status Health of [{esnodes[0]}]: {health}")
+        except requests.exceptions.RequestException as re:
+            logger.error(f"Health failure on {esnodes}: http_status={rq.status_code}: {re}")
+            return False
 
+        # index
+        try:
             url = f"{esnodes[0]}/{index_name}/{doc_type_mode}"
             rq = requests.post(url=url, auth=HTTPBasicAuth(user, password), json=doc)
+            rq.raise_for_status()
             res = rq.json()
             logger.debug(f"Tags indexed successfully: {res}")
             return is_indexed(res)
         except requests.exceptions.RequestException as re:
-            logger.error(f"Failure to index: http_status={rq.status_code}: {re}")
+            logger.error(f"Index failure on {esnodes}: http_status={rq.status_code}: {re}")
 
     else:
         try:
