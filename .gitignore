@@ -4,4 +4,4 @@ config.ini
 db/*.db
 logs/*log*
 pipeline_with_session.py
-http/*_pass.http
+**/*_pass.http
