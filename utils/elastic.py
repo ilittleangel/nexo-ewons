@@ -31,42 +31,45 @@ def create_connection(esnodes):
         logger.error(f"Unable to connect Elasticsearch")
 
 
-def index(doc, doc_type_mode, user, password, esnodes):
+def index(doc, doc_type_mode, user, password, esnodes, enable):
     index_name = f"{INDEX_NAME}-{datetime.today().strftime('%Y%m%d')}"
-    if user and password:
-        # health
-        try:
-            url = f"{esnodes[0]}/_cluster/health"
-            rq = requests.get(url=url, auth=HTTPBasicAuth(user, password))
-            rq.raise_for_status()
-            health = rq.json()['status']
-            logger.info(f"Status Health of [{esnodes[0]}]: {health}")
-        except requests.exceptions.RequestException as re:
-            logger.error(f"Health failure on {esnodes}: http_status={rq.status_code}: {re}")
-            return False
+    if enable:
+        if user and password:
+            # health
+            try:
+                url = f"{esnodes[0]}/_cluster/health"
+                rq = requests.get(url=url, auth=HTTPBasicAuth(user, password))
+                rq.raise_for_status()
+                health = rq.json()['status']
+                logger.info(f"Status Health of [{esnodes[0]}]: {health}")
+            except requests.exceptions.RequestException as re:
+                logger.error(f"Health failure on {esnodes}: http_status={rq.status_code}: {re}")
+                return False
 
-        # index
-        try:
-            url = f"{esnodes[0]}/{index_name}/{doc_type_mode}"
-            rq = requests.post(url=url, auth=HTTPBasicAuth(user, password), json=doc)
-            rq.raise_for_status()
-            res = rq.json()
-            logger.debug(f"Tags indexed successfully: {res}")
-            return is_indexed(res)
-        except requests.exceptions.RequestException as re:
-            logger.error(f"Index failure on {esnodes}: http_status={rq.status_code}: {re}")
+            # index
+            try:
+                url = f"{esnodes[0]}/{index_name}/{doc_type_mode}"
+                rq = requests.post(url=url, auth=HTTPBasicAuth(user, password), json=doc)
+                rq.raise_for_status()
+                res = rq.json()
+                logger.debug(f"Tags indexed successfully: {res}")
+                return is_indexed(res)
+            except requests.exceptions.RequestException as re:
+                logger.error(f"Index failure on {esnodes}: http_status={rq.status_code}: {re}")
 
+        else:
+            try:
+                es, health = create_connection(esnodes)
+                logger.info(f"Status Health of [{esnodes}]: {health}")
+                res = es.index(index=index_name, doc_type=doc_type_mode, body=doc)
+                logger.debug(f"Tags indexed successfully: {res}")
+                return is_indexed(res)
+            except TransportError as te:
+                logger.error(f"Failure to index: {te}")
+            except ElasticsearchException as ee:
+                logger.error(f"Something wrong with Elasticsearch: {ee}")
     else:
-        try:
-            es, health = create_connection(esnodes)
-            logger.info(f"Status Health of [{esnodes}]: {health}")
-            res = es.index(index=index_name, doc_type=doc_type_mode, body=doc)
-            logger.debug(f"Tags indexed successfully: {res}")
-            return is_indexed(res)
-        except TransportError as te:
-            logger.error(f"Failure to index: {te}")
-        except ElasticsearchException as ee:
-            logger.error(f"Something wrong with Elasticsearch: {ee}")
+        return False
 
 
 def get_newest_index(es):

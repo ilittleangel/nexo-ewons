@@ -10,6 +10,13 @@ t2mdevicepassword = pass
 
 [ELASTIC]
 esnodes = esnode1:port,esnode2:port
+enable_index = no
+
+[ELASTIC_CLOUD]
+esnodes = https://elastic.cloud:9243
+user = user
+pass = pass
+enable_index = yes
 
 [LOGGING]
 level = DEBUG

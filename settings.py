@@ -35,12 +35,15 @@ try:
     PASS = elastic['pass']
 except KeyError:
     pass
+ENABLE_INDEX = elastic.getboolean('enable_index', fallback=True)
+
 
 # elastic cloud
 elastic_cloud = config['ELASTIC_CLOUD']
 ESNODES_cloud = str(elastic_cloud['esnodes']).split(',')
 USER_cloud = elastic_cloud['user']
 PASS_cloud = elastic_cloud['pass']
+ENABLE_INDEX_cloud = elastic_cloud.getboolean('enable_index', fallback=True)
 
 # logging
 logging = config['LOGGING']

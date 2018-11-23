@@ -1,7 +1,6 @@
 import json
 import logging
 import time
-import sys
 import requests.exceptions
 
 import utils.m2web_api
@@ -9,8 +8,8 @@ from utils.elastic import index
 from utils.logging import init_logging, close_logging, failure_logging
 from utils.helpers import csv_to_dict, prepare, counter
 from settings import ROOT_DIR, sleep_seconds
-from settings import ESNODES, USER, PASS
-from settings import ESNODES_cloud, USER_cloud, PASS_cloud
+from settings import ESNODES, USER, PASS, ENABLE_INDEX
+from settings import ESNODES_cloud, USER_cloud, PASS_cloud, ENABLE_INDEX_cloud
 
 
 def _accountinfo():
@@ -46,9 +45,9 @@ def _tags(ewons, count):
             tags = res.text
             doc = prepare(csv_to_dict(tags))
             logger.debug(f"Indexing tags: {doc}")
-            res = index(doc, "tags", USER, PASS, ESNODES)
+            res = index(doc, "tags", USER, PASS, ESNODES, ENABLE_INDEX)
             logger.info(f"Indexing on {ESNODES}: {res}")
-            res_cloud = index(doc, "tags", USER_cloud, PASS_cloud, ESNODES_cloud)
+            res_cloud = index(doc, "tags", USER_cloud, PASS_cloud, ESNODES_cloud, ENABLE_INDEX_cloud)
             logger.info(f"Indexing on {ESNODES_cloud}: {res_cloud}")
             results = [("on-premise", res), ("cloud", res_cloud)]
             return ewon_failures, counter(init_val=0), results
@@ -72,7 +71,8 @@ def _actions_against_failure(failures, res):
         2: {'sleep_time': 10, 'exit': False, 'msg': message_warn,  'level': "WARN"},
         3: {'sleep_time': 20, 'exit': False, 'msg': message_warn,  'level': "WARN"},
         4: {'sleep_time': 20, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        5: {'sleep_time': 0,  'exit': True,  'msg': message_error, 'level': "ERROR"}
+        5: {'sleep_time': 60, 'exit': False, 'msg': message_warn,  'level': "WARN"},
+        6: {'sleep_time': 0,  'exit': True,  'msg': message_error, 'level': "ERROR"}
     }
     params = switcher.get(failures, lambda: "Invalid num of failures")
     _action_failure(params)
