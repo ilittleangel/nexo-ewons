@@ -64,17 +64,13 @@ def _action_failure(params):
 
 
 def _actions_against_failure(failures, res):
-    message_warn = f"Something wrong with `gettags()`: {res}"
-    message_error = f"Tags ingestion FAILED because too many failures: failures=`{failures}`"
-    switcher = {
-        1: {'sleep_time': 10, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        2: {'sleep_time': 10, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        3: {'sleep_time': 20, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        4: {'sleep_time': 20, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        5: {'sleep_time': 60, 'exit': False, 'msg': message_warn,  'level': "WARN"},
-        6: {'sleep_time': 0,  'exit': True,  'msg': message_error, 'level': "ERROR"}
-    }
-    params = switcher.get(failures, lambda: "Invalid num of failures")
+    message_error1 = f"Something wrong with `gettags()`: {res}"
+    message_error2 = f"Tags ingestion FAILED because too many failures: failures=`{failures}`"
+    if 0 < failures < 6:
+        params = {'sleep_time': 10, 'exit': False, 'msg': message_error1, 'level': "ERROR"}
+    else:
+        params = {'sleep_time': 60, 'exit': False, 'msg': message_error2, 'level': "ERROR"}
+
     _action_failure(params)
 
 
