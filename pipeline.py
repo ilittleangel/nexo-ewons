@@ -67,6 +67,8 @@ def _actions_against_failure(failures, res):
 
 
 def main():
+    import setproctitle as sp
+    sp.setproctitle('pipeline.py')
 
     logger.info("START tags ingestion")
     failures = 0
